@@ -1,6 +1,6 @@
 import sys
 
-'''This function provides the capacity, size and space left in the lsit.
+'''This function provides the capacity, size and space left in the list.
 We can invoke it to get the details of the lsit.'''
 
 def list_details(lst):
