@@ -39,7 +39,6 @@ The function doesn't create additional data structure so space complexity would 
 '''
 
 
-
 def exercise_3(nums):
     largest = nums[0]
     for num in nums:
@@ -73,13 +72,13 @@ def exercise_4(nums, target):
     return -1
 
 '''
-# Time Complexity:
+Time Complexity:
 O(n)
 
-#Space Complexity:
+Space Complexity:
 O(1)
 
-#Why:
-The loop executes exponentially n times so time complexity would be O(n).
-The function doesn't create additional data structure so space complexity would be O(1).
+Why:
+The algorithm checks each element sequentially until it finds the target.
+In the worst case, it may need to check all n elements, so the time complexity is O(n). It uses only a constant amount of extra memory, so the space complexity is O(1).
 '''

@@ -72,3 +72,14 @@ The amount of work grows approximately in proportion to the input size.
 
 # Space Complexity
 Space complexity tells us how much additional memory an algorithm needs as the input grows.
+
+
+
+Exponential growth → things like 2^n
+"Every time I add one more item, the amount of work roughly doubles."
+
+Linear growth → n
+"For every item, I do one piece of work."
+
+Logarithmic growth → log n
+

@@ -1,7 +1,7 @@
 import sys
 
 '''This function provides the capacity, size and space left in the list.
-We can invoke it to get the details of the lsit.'''
+We can invoke it to get the details of the list.'''
 
 def list_details(lst):
     print("Capacity:", (sys.getsizeof(lst)-36)//4)

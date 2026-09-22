@@ -23,13 +23,12 @@ class OrganizationDirectory:
     def __init__(self, emp_list):
         self.__emp_list = emp_list
 
-    def lookup(self,key_name, key_emp_id):
+    def lookup(self,key_name):
         result_list=[]
         for emp in self.__emp_list:
             if(key_name in emp.get_name()):
                 result_list.append(emp)
-            if(key_emp_id in emp.get_emp_id()):
-                result_list.append(emp)
+            
         self.display(result_list)
         return result_list
 
@@ -52,6 +51,6 @@ emp_list=[emp1,emp2,emp3,emp4,emp5]
 org_dir=OrganizationDirectory(emp_list)
 #Search for an employee
 org_dir.lookup("")
-org_dir.lookup("56789")
+org_dir.lookup("Kevin")
 
     
