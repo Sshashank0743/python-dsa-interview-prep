@@ -21,9 +21,11 @@ def exercise_1(nums):
 # Time Complexity:
 O(1)
 O(1) because the function directly accesses nums[0], regardless of how many elements are in the input array.
+
 #Space Complexity:
 O(1)
 O(1) because the function doesn't create any additional data structure whose size depends on the input.
+
 #Why:
 Because I have to do only 1 action to perform.
 '''
@@ -101,7 +103,6 @@ def test(nums):
         print(num)
 
 
-
 '''
 Time Complexity:
 O(n)
@@ -123,7 +124,6 @@ Space complexity is O(1) because no additional memory grows with the input size.
 def exercise_4(nums):
     left = 0
     right = len(nums) - 1
-
     while left < right:
         middle = (left + right) // 2
 
