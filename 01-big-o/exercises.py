@@ -80,21 +80,3 @@ Why:
 The algorithm eliminates approximately half of the remaining search space during each iteration, so the time complexity is O(log n). 
 It only uses the variables left, right, and middle, so the extra space complexity is O(1).
 '''
-
-
-def test_5(nums):
-    for i in range(len(nums)):
-        for j in range(i):
-            print(nums[i], nums[j])
-
-
-'''
-Time Complexity:
-O(n²)
-
-Space Complexity:
-O(1)
-
-Why:
-
-'''
