@@ -4,7 +4,7 @@ def find_min(nums):
         if num < smallest:
             smallest = num
 
-    return num
+    return smallest
 
 '''
 What does the algorithm do?
@@ -18,10 +18,7 @@ Space Complexity:
 O(1)
 
 Why:
-The algorithm checks every element in the list once, so the
-amount of work grows linearly with the number of elements.
-It only uses a constant number of variables and does not
-create an additional data structure that grows with the input,
-so the extra space is O(1).
+The algorithm checks every element in the list once, so the amount of work grows linearly with the number of elements.
+It only uses a constant number of variables and does not create an additional data structure that grows with the input, so the extra space is O(1).
 
 '''

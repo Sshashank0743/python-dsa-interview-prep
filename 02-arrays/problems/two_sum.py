@@ -1,20 +1,21 @@
-def find_sum(nums):
-    total = 0
+def two_sum(nums, target):
+    for i in range(nums):
+        for j in range(i + 1, len(nums)):
+            if nums[i] + nums[j] == target:
+                return [i, j]
 
-    for num in nums:
-        total += num
-
-    return total
+    return []
 
 
+nums = [2, 7, 11, 15]
+target = 9
 
-nums = [5, 10, 15, 20]
-total  = 50
 
 '''
 Time Complexity:
-O(n)
+O(n²)
 
 Space Complexity:
 O(1)
+
 '''
