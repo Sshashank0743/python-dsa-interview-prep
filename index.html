@@ -1,0 +1,1098 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Catalog | Smart Filters</title>
+
+<style>
+:root {
+  --primary: #4f46e5;
+  --primary-light: #eef2ff;
+  --text: #202438;
+  --muted: #73798c;
+  --border: #e7e9f0;
+  --background: #f7f8fc;
+  --white: #ffffff;
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--background);
+  color: var(--text);
+}
+
+button, input, select { font: inherit; }
+
+button { cursor: pointer; }
+
+.topbar {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 18px 4%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.brand {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+}
+
+.brand span { color: var(--primary); }
+
+.search {
+  width: min(420px, 45%);
+  position: relative;
+}
+
+.search input {
+  width: 100%;
+  padding: 12px 15px 12px 42px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  outline: none;
+  background: #fafbff;
+}
+
+.search input:focus {
+  border-color: var(--primary);
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 10px;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.page {
+  max-width: 1500px;
+  margin: auto;
+  padding: 30px 4%;
+}
+
+.breadcrumb {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 22px;
+}
+
+.page-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: clamp(25px, 3vw, 34px);
+  letter-spacing: -1px;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin: 0;
+  font-size: 14px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 265px minmax(0, 1fr);
+  gap: 26px;
+  align-items: start;
+}
+
+.sidebar {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: sticky;
+  top: 18px;
+}
+
+.filter-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 19px;
+  border-bottom: 1px solid var(--border);
+}
+
+.filter-heading strong { font-size: 16px; }
+
+.text-button {
+  color: var(--primary);
+  border: 0;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px;
+}
+
+.filter-group {
+  padding: 17px 19px;
+  border-bottom: 1px solid var(--border);
+}
+
+.filter-group:last-child { border-bottom: 0; }
+
+.filter-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 14px;
+  text-align: left;
+}
+
+.chevron {
+  color: var(--muted);
+  transition: transform .2s;
+}
+
+.filter-group.collapsed .chevron {
+  transform: rotate(-90deg);
+}
+
+.filter-options {
+  display: grid;
+  gap: 13px;
+  margin-top: 18px;
+}
+
+.filter-group.collapsed .filter-options { display: none; }
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  color: #53596d;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.option input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.option .count {
+  margin-left: auto;
+  color: #999fb0;
+  font-size: 11px;
+}
+
+.rating-stars {
+  color: #f59e0b;
+  letter-spacing: 1px;
+}
+
+.results { min-width: 0; }
+
+.results-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.results-count {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.results-count span {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.sort-select {
+  border: 1px solid var(--border);
+  background: white;
+  border-radius: 9px;
+  padding: 10px 12px;
+  color: var(--text);
+  outline: none;
+  font-size: 13px;
+}
+
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.filter-chip button {
+  border: 0;
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-size: 16px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.product-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  min-width: 0;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px #2024380c;
+}
+
+.product-image {
+  height: 190px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  font-size: 72px;
+  overflow: hidden;
+}
+
+.product-image::after {
+  content: "";
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: #ffffff55;
+}
+
+.product-image .emoji {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 9px 8px #00000015);
+}
+
+.product-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  background: white;
+  padding: 6px 9px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.heart {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  background: white;
+  border: 0;
+  border-radius: 50%;
+  width: 33px;
+  height: 33px;
+  font-size: 17px;
+}
+
+.heart.active { color: #e11d48; }
+
+.product-info { padding: 16px; }
+
+.product-category {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.product-name {
+  font-size: 15px;
+  margin: 8px 0;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.product-rating {
+  color: #f59e0b;
+  font-size: 12px;
+  margin-bottom: 13px;
+}
+
+.product-rating span {
+  color: var(--muted);
+  margin-left: 4px;
+}
+
+.product-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.price {
+  font-size: 19px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.old-price {
+  color: #9da2b1;
+  text-decoration: line-through;
+  font-size: 11px;
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+.add-button {
+  background: var(--primary);
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.add-button:hover { background: #3730a3; }
+
+.stock {
+  font-size: 11px;
+  margin-top: 13px;
+  color: #16804a;
+}
+
+.stock.out { color: #dc2626; }
+
+.empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 70px 20px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.empty .emoji { font-size: 48px; }
+
+.empty h3 { margin-bottom: 7px; }
+
+.empty p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.primary-button {
+  background: var(--primary);
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 11px 18px;
+  margin-top: 8px;
+}
+
+.mobile-filter-button { display: none; }
+
+@media (max-width: 1100px) {
+  .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .product-image { height: 170px; }
+}
+
+@media (max-width: 700px) {
+  .topbar { padding: 15px 5%; flex-wrap: wrap; }
+  .search { width: 100%; order: 2; }
+  .page { padding: 22px 5%; }
+  .page-heading { align-items: start; }
+  .layout { grid-template-columns: 1fr; gap: 18px; }
+  .sidebar { position: static; }
+  .mobile-filter-button {
+    display: inline-block;
+    border: 1px solid var(--border);
+    background: white;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .sidebar.mobile-hidden { display: none; }
+  .product-grid { gap: 12px; }
+  .product-image { height: 140px; font-size: 55px; }
+  .product-info { padding: 12px; }
+  .product-name { font-size: 13px; }
+  .price { font-size: 16px; }
+  .add-button { padding: 9px; }
+}
+
+@media (max-width: 380px) {
+  .product-grid { grid-template-columns: 1fr; }
+  .product-image { height: 200px; }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="brand">smart<span>store.</span></div>
+  <div class="search">
+    <span class="search-icon">⌕</span>
+    <input id="searchInput" type="search"
+      placeholder="Search products, brands..." aria-label="Search products">
+  </div>
+  <div style="font-size:13px;font-weight:600">🛍 My Store</div>
+</header>
+
+<main class="page">
+  <div class="breadcrumb">Home / Shop / All Products</div>
+
+  <div class="page-heading">
+    <div>
+      <h1>Explore Products</h1>
+      <p class="subtitle">Find the right product with smart filters.</p>
+    </div>
+    <button class="mobile-filter-button" id="mobileFilterBtn">
+      ☷ Filters
+    </button>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="filter-heading">
+        <strong>☷ Filters</strong>
+        <button class="text-button" id="clearAll">Clear All</button>
+      </div>
+
+      <!-- FILTER 1: CATEGORY -->
+      <section class="filter-group" data-group="category">
+        <button class="filter-title" aria-expanded="true">
+          Category <span class="chevron">⌄</span>
+        </button>
+        <div class="filter-options">
+          <label class="option"><input type="checkbox" value="Electronics">
+            Electronics <span class="count">4</span></label>
+          <label class="option"><input type="checkbox" value="Clothing">
+            Clothing <span class="count">3</span></label>
+          <label class="option"><input type="checkbox" value="Home & Kitchen">
+            Home & Kitchen <span class="count">3</span></label>
+          <label class="option"><input type="checkbox" value="Accessories">
+            Accessories <span class="count">2</span></label>
+        </div>
+      </section>
+
+      <!-- FILTER 2: BRAND -->
+      <section class="filter-group" data-group="brand">
+        <button class="filter-title" aria-expanded="true">
+          Brand <span class="chevron">⌄</span>
+        </button>
+        <div class="filter-options" id="brandOptions">
+          <label class="option"><input type="checkbox" value="Apple">Apple</label>
+          <label class="option"><input type="checkbox" value="Samsung">Samsung</label>
+          <label class="option"><input type="checkbox" value="Nike">Nike</label>
+          <label class="option"><input type="checkbox" value="Adidas">Adidas</label>
+          <label class="option"><input type="checkbox" value="Sony">Sony</label>
+          <label class="option"><input type="checkbox" value="IKEA">IKEA</label>
+          <label class="option"><input type="checkbox" value="Puma">Puma</label>
+          <label class="option"><input type="checkbox" value="boAt">boAt</label>
+        </div>
+      </section>
+
+      <!-- FILTER 3: PRICE -->
+      <section class="filter-group" data-group="price">
+        <button class="filter-title" aria-expanded="true">
+          Price Range <span class="chevron">⌄</span>
+        </button>
+        <div class="filter-options">
+          <label class="option"><input type="checkbox" value="0-999">
+            Under ₹1,000</label>
+          <label class="option"><input type="checkbox" value="1000-4999">
+            ₹1,000 – ₹4,999</label>
+          <label class="option"><input type="checkbox" value="5000-9999">
+            ₹5,000 – ₹9,999</label>
+          <label class="option"><input type="checkbox" value="10000-999999">
+            ₹10,000 and above</label>
+        </div>
+      </section>
+
+      <!-- FILTER 4: RATING -->
+      <section class="filter-group" data-group="rating">
+        <button class="filter-title" aria-expanded="true">
+          Customer Rating <span class="chevron">⌄</span>
+        </button>
+        <div class="filter-options">
+          <label class="option"><input type="checkbox" value="4">
+            <span class="rating-stars">★★★★★</span> <span>4★ & above</span></label>
+          <label class="option"><input type="checkbox" value="3">
+            <span class="rating-stars">★★★★</span><span>3★ & above</span></label>
+          <label class="option"><input type="checkbox" value="2">
+            <span class="rating-stars">★★★</span><span>2★ & above</span></label>
+        </div>
+      </section>
+
+      <!-- FILTER 5: AVAILABILITY -->
+      <section class="filter-group" data-group="availability">
+        <button class="filter-title" aria-expanded="true">
+          Availability <span class="chevron">⌄</span>
+        </button>
+        <div class="filter-options">
+          <label class="option"><input type="checkbox" value="inStock">
+            In Stock</label>
+          <label class="option"><input type="checkbox" value="outOfStock">
+            Out of Stock</label>
+          <label class="option"><input type="checkbox" value="sale">
+            On Sale</label>
+        </div>
+      </section>
+    </aside>
+
+    <section class="results">
+      <div class="results-toolbar">
+        <div class="results-count" id="resultsCount">12 products
+          <span>available</span></div>
+        <select class="sort-select" id="sortSelect" aria-label="Sort products">
+          <option value="recommended">Recommended</option>
+          <option value="priceLow">Price: Low to High</option>
+          <option value="priceHigh">Price: High to Low</option>
+          <option value="rating">Top Rated</option>
+          <option value="name">Name: A to Z</option>
+        </select>
+      </div>
+
+      <div class="active-filters" id="activeFilters"></div>
+      <div class="product-grid" id="productGrid"></div>
+    </section>
+  </div>
+</main>
+
+<script>
+const products = [
+  {
+    id: 1, name: "iPhone 15", category: "Electronics",
+    brand: "Apple", price: 59999, oldPrice: 69999,
+    rating: 4.8, stock: true, sale: true,
+    emoji: "📱", color: "#e7eaff", badge: "Best Seller"
+  },
+  {
+    id: 2, name: "Galaxy Buds", category: "Electronics",
+    brand: "Samsung", price: 7999, oldPrice: 9999,
+    rating: 4.3, stock: true, sale: true,
+    emoji: "🎧", color: "#e4f4ec", badge: "Sale"
+  },
+  {
+    id: 3, name: "AirPods Pro", category: "Electronics",
+    brand: "Apple", price: 24999, oldPrice: 26999,
+    rating: 4.9, stock: true, sale: true,
+    emoji: "🎧", color: "#f0e9ff", badge: "Popular"
+  },
+  {
+    id: 4, name: "Sony Headphones", category: "Electronics",
+    brand: "Sony", price: 8999, oldPrice: null,
+    rating: 4.5, stock: false, sale: false,
+    emoji: "🎧", color: "#e5edf8", badge: ""
+  },
+  {
+    id: 5, name: "Running Shoes", category: "Clothing",
+    brand: "Nike", price: 3499, oldPrice: 4999,
+    rating: 4.6, stock: true, sale: true,
+    emoji: "👟", color: "#ffede1", badge: "Sale"
+  },
+  {
+    id: 6, name: "Classic Sneakers", category: "Clothing",
+    brand: "Adidas", price: 2799, oldPrice: null,
+    rating: 4.1, stock: true, sale: false,
+    emoji: "👟", color: "#f1f1f1", badge: ""
+  },
+  {
+    id: 7, name: "Sports T-Shirt", category: "Clothing",
+    brand: "Puma", price: 899, oldPrice: 1199,
+    rating: 3.8, stock: true, sale: true,
+    emoji: "👕", color: "#ffe8ed", badge: "Sale"
+  },
+  {
+    id: 8, name: "Smart Watch", category: "Accessories",
+    brand: "Samsung", price: 6999, oldPrice: null,
+    rating: 4.2, stock: true, sale: false,
+    emoji: "⌚", color: "#e2f1ff", badge: ""
+  },
+  {
+    id: 9, name: "Wireless Speaker", category: "Accessories",
+    brand: "boAt", price: 1499, oldPrice: 1999,
+    rating: 3.7, stock: false, sale: true,
+    emoji: "🔊", color: "#f9e8ff", badge: "Sale"
+  },
+  {
+    id: 10, name: "Desk Lamp", category: "Home & Kitchen",
+    brand: "IKEA", price: 1299, oldPrice: null,
+    rating: 4.4, stock: true, sale: false,
+    emoji: "💡", color: "#fff3d9", badge: ""
+  },
+  {
+    id: 11, name: "Storage Organizer", category: "Home & Kitchen",
+    brand: "IKEA", price: 799, oldPrice: 999,
+    rating: 3.5, stock: true, sale: true,
+    emoji: "🗃️", color: "#e8f4e8", badge: "Sale"
+  },
+  {
+    id: 12, name: "Coffee Maker", category: "Home & Kitchen",
+    brand: "Samsung", price: 4499, oldPrice: null,
+    rating: 4.7, stock: true, sale: false,
+    emoji: "☕", color: "#f5e9dd", badge: "Top Rated"
+  }
+];
+
+const groupLabels = {
+  category: "Category",
+  brand: "Brand",
+  price: "Price",
+  rating: "Rating",
+  availability: "Availability"
+};
+
+const priceLabels = {
+  "0-999": "Under ₹1,000",
+  "1000-4999": "₹1,000–₹4,999",
+  "5000-9999": "₹5,000–₹9,999",
+  "10000-999999": "₹10,000+"
+};
+
+const ratingLabels = {
+  "4": "4★ & above",
+  "3": "3★ & above",
+  "2": "2★ & above"
+};
+
+const availabilityLabels = {
+  inStock: "In Stock",
+  outOfStock: "Out of Stock",
+  sale: "On Sale"
+};
+
+const selected = {
+  category: new Set(),
+  brand: new Set(),
+  price: new Set(),
+  rating: new Set(),
+  availability: new Set()
+};
+
+const $ = id => document.getElementById(id);
+
+function money(amount) {
+  return "₹" + amount.toLocaleString("en-IN");
+}
+
+function getFilteredProducts() {
+  const query = $("searchInput").value.trim().toLowerCase();
+
+  return products.filter(p => {
+    // Search
+    if (query && ![p.name, p.brand, p.category]
+      .some(v => v.toLowerCase().includes(query))) return false;
+
+    // Each filter group uses OR between its own selected values.
+    // Different groups combine with AND.
+    if (selected.category.size &&
+      !selected.category.has(p.category)) return false;
+
+    if (selected.brand.size &&
+      !selected.brand.has(p.brand)) return false;
+
+    if (selected.price.size) {
+      const matchesPrice = [...selected.price].some(range => {
+        const [min, max] = range.split("-").map(Number);
+        return p.price >= min && p.price <= max;
+      });
+      if (!matchesPrice) return false;
+    }
+
+    if (selected.rating.size &&
+      ![...selected.rating].some(r => p.rating >= Number(r))) return false;
+
+    if (selected.availability.size) {
+      const matchesAvailability = [...selected.availability].some(value => {
+        if (value === "inStock") return p.stock;
+        if (value === "outOfStock") return !p.stock;
+        if (value === "sale") return p.sale;
+        return false;
+      });
+      if (!matchesAvailability) return false;
+    }
+
+    return true;
+  });
+}
+
+function getSortedProducts(list) {
+  const sort = $("sortSelect").value;
+  const result = [...list];
+
+  if (sort === "priceLow") result.sort((a, b) => a.price - b.price);
+  if (sort === "priceHigh") result.sort((a, b) => b.price - a.price);
+  if (sort === "rating") result.sort((a, b) => b.rating - a.rating);
+  if (sort === "name") result.sort((a, b) => a.name.localeCompare(b.name));
+
+  return result;
+}
+
+function renderProducts() {
+  const filtered = getSortedProducts(getFilteredProducts());
+
+  $("resultsCount").innerHTML =
+    `${filtered.length} product${filtered.length !== 1 ? "s" : ""} ` +
+    `<span>found</span>`;
+
+  renderActiveFilters();
+  renderDynamicFilters();
+
+  if (!filtered.length) {
+    $("productGrid").innerHTML = `
+      <div class="empty">
+        <div class="emoji">🔎</div>
+        <h3>No products found</h3>
+        <p>Try changing your filters or search for something else.</p>
+        <button class="primary-button" onclick="clearAllFilters()">
+          Clear all filters
+        </button>
+      </div>`;
+    return;
+  }
+
+  $("productGrid").innerHTML = filtered.map(p => `
+    <article class="product-card">
+      <div class="product-image" style="background:${p.color}">
+        ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ""}
+        <button class="heart" aria-label="Add ${p.name} to wishlist"
+          onclick="toggleHeart(this)">♡</button>
+        <span class="emoji">${p.emoji}</span>
+      </div>
+      <div class="product-info">
+        <div class="product-category">${p.brand} · ${p.category}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-rating">
+          ★★★★★ <span>${p.rating.toFixed(1)} / 5</span>
+        </div>
+        <div class="product-bottom">
+          <div class="price">
+            ${money(p.price)}
+            ${p.oldPrice ? `<span class="old-price">${money(p.oldPrice)}</span>` : ""}
+          </div>
+          <button class="add-button"
+            onclick="addToCart(${p.id})">Add +</button>
+        </div>
+        <div class="stock ${p.stock ? "" : "out"}">
+          ${p.stock ? "✓ In Stock" : "✕ Out of Stock"}
+          ${p.sale ? " · On Sale" : ""}
+        </div>
+      </div>
+    </article>
+  `).join("");
+}
+
+
+function renderDynamicFilters() {
+  const filteredProducts = getFilteredProducts();
+
+  const configs = {
+    category: {
+      values: [...new Set(products.map(p => p.category))],
+      label: value => value
+    },
+    brand: {
+      values: [...new Set(products.map(p => p.brand))],
+      label: value => value
+    },
+    price: {
+      values: ["0-999", "1000-4999", "5000-9999", "10000-999999"],
+      label: value => priceLabels[value]
+    },
+    rating: {
+      values: ["4", "3", "2"],
+      label: value => ratingLabels[value]
+    },
+    availability: {
+      values: ["inStock", "outOfStock", "sale"],
+      label: value => availabilityLabels[value]
+    }
+  };
+
+  // Get products matching every active filter except the
+  // filter group currently being displayed.
+  function getFacetProducts(excludedGroup) {
+    const query = $("searchInput").value.trim().toLowerCase();
+
+    return products.filter(p => {
+      if (query && ![p.name, p.brand, p.category]
+        .some(v => v.toLowerCase().includes(query))) return false;
+
+      for (const [group, values] of Object.entries(selected)) {
+        if (group === excludedGroup || !values.size) continue;
+
+        if (group === "category" && !values.has(p.category))
+          return false;
+
+        if (group === "brand" && !values.has(p.brand))
+          return false;
+
+        if (group === "price") {
+          const match = [...values].some(range => {
+            const [min, max] = range.split("-").map(Number);
+            return p.price >= min && p.price <= max;
+          });
+          if (!match) return false;
+        }
+
+        if (group === "rating" &&
+          ![...values].some(r => p.rating >= Number(r)))
+          return false;
+
+        if (group === "availability") {
+          const match = [...values].some(value => {
+            if (value === "inStock") return p.stock;
+            if (value === "outOfStock") return !p.stock;
+            if (value === "sale") return p.sale;
+            return false;
+          });
+          if (!match) return false;
+        }
+      }
+
+      return true;
+    });
+  }
+
+  for (const [group, config] of Object.entries(configs)) {
+    const container = document.querySelector(
+      `.filter-group[data-group="${group}"] .filter-options`
+    );
+
+    if (!container) continue;
+
+    const facetProducts = getFacetProducts(group);
+    const selectedValues = selected[group];
+
+    const availableValues = config.values.filter(value => {
+      // Never hide a selected option: the user must be able
+      // to uncheck it even if it no longer matches the results.
+      if (selectedValues.has(value)) return true;
+
+      return facetProducts.some(p => {
+        if (group === "category") return p.category === value;
+        if (group === "brand") return p.brand === value;
+
+        if (group === "price") {
+          const [min, max] = value.split("-").map(Number);
+          return p.price >= min && p.price <= max;
+        }
+
+        if (group === "rating") return p.rating >= Number(value);
+
+        if (group === "availability") {
+          if (value === "inStock") return p.stock;
+          if (value === "outOfStock") return !p.stock;
+          if (value === "sale") return p.sale;
+        }
+
+        return false;
+      });
+    });
+
+    container.innerHTML = availableValues.map(value => {
+      const checked = selectedValues.has(value);
+      const count = facetProducts.filter(p => {
+        if (group === "category") return p.category === value;
+        if (group === "brand") return p.brand === value;
+
+        if (group === "price") {
+          const [min, max] = value.split("-").map(Number);
+          return p.price >= min && p.price <= max;
+        }
+
+        if (group === "rating") return p.rating >= Number(value);
+
+        if (group === "availability") {
+          if (value === "inStock") return p.stock;
+          if (value === "outOfStock") return !p.stock;
+          if (value === "sale") return p.sale;
+        }
+
+        return false;
+      }).length;
+
+      const stars = group === "rating"
+        ? `<span class="rating-stars">${"★".repeat(Number(value) + 1)}</span>`
+        : "";
+
+      const label = group === "rating"
+        ? config.label(value)
+        : config.label(value);
+
+      return `
+        <label class="option">
+          <input
+            type="checkbox"
+            value="${value}"
+            ${checked ? "checked" : ""}
+            onchange="handleFilterChange(this, '${group}')">
+          ${stars}
+          <span>${label}</span>
+          <span class="count">${count}</span>
+        </label>
+      `;
+    }).join("");
+
+    // Hide a filter group if it has no applicable options.
+    // Selected options are retained by the logic above.
+    container.closest(".filter-group").style.display =
+      availableValues.length ? "" : "none";
+  }
+}
+
+function renderActiveFilters() {
+  const chips = [];
+
+  for (const [group, values] of Object.entries(selected)) {
+    for (const value of values) {
+      let label = value;
+
+      if (group === "price") label = priceLabels[value] || value;
+      if (group === "rating") label = ratingLabels[value] || value;
+      if (group === "availability")
+        label = availabilityLabels[value] || value;
+
+      chips.push(`
+        <span class="filter-chip">
+          ${groupLabels[group]}: ${label}
+          <button aria-label="Remove ${label}"
+            onclick="removeFilter('${group}', '${value}')">×</button>
+        </span>`);
+    }
+  }
+
+  $("activeFilters").innerHTML = chips.join("");
+}
+
+function handleFilterChange(input, group) {
+  if (input.checked) selected[group].add(input.value);
+  else selected[group].delete(input.value);
+
+  renderProducts();
+}
+
+function removeFilter(group, value) {
+  selected[group].delete(value);
+
+  document.querySelectorAll(
+    `.filter-group[data-group="${group}"] input`
+  ).forEach(input => {
+    input.checked = selected[group].has(input.value);
+  });
+
+  renderProducts();
+}
+
+function clearAllFilters() {
+  Object.values(selected).forEach(set => set.clear());
+
+  document.querySelectorAll(".filter-group input").forEach(input => {
+    input.checked = false;
+  });
+
+  $("searchInput").value = "";
+  renderProducts();
+}
+
+function toggleHeart(button) {
+  button.classList.toggle("active");
+  button.textContent = button.classList.contains("active") ? "♥" : "♡";
+}
+
+function addToCart(id) {
+  const product = products.find(p => p.id === id);
+
+  if (!product.stock) {
+    alert(product.name + " is currently out of stock.");
+    return;
+  }
+
+  alert(product.name + " added to cart!");
+}
+
+// Checkbox events for all filter groups except dynamically rendered brands.
+document.querySelectorAll(
+  '.filter-group:not([data-group="brand"]) input'
+).forEach(input => {
+  input.addEventListener("change", () => {
+    const group = input.closest(".filter-group").dataset.group;
+    handleFilterChange(input, group);
+  });
+});
+
+$("searchInput").addEventListener("input", renderProducts);
+$("sortSelect").addEventListener("change", renderProducts);
+$("clearAll").addEventListener("click", clearAllFilters);
+
+$("mobileFilterBtn").addEventListener("click", () => {
+  $("sidebar").classList.toggle("mobile-hidden");
+});
+
+// Expand and collapse individual filter groups.
+document.querySelectorAll(".filter-title").forEach(button => {
+  button.addEventListener("click", () => {
+    const group = button.closest(".filter-group");
+    group.classList.toggle("collapsed");
+    button.setAttribute(
+      "aria-expanded",
+      String(!group.classList.contains("collapsed"))
+    );
+  });
+});
+
+// Initial catalog.
+renderProducts();
+</script>
+</body>
+</html>
